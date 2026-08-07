@@ -1,6 +1,12 @@
-# Day 03 - Git & Open Source Contribution
+# Day 03 – Git & Open Source Contribution
 
-## Task 1: Git Setup
+## Internship Task
+
+This assignment focused on learning Git, GitHub, and contributing to an open-source project.
+
+---
+
+## Task 1 – Git Setup
 
 Completed the following:
 
@@ -16,21 +22,24 @@ Completed the following:
 
 ---
 
-## Task 2: Internship Repository
+## Task 2 – GitHub Repository
 
-Created a public GitHub repository named:
+Created a public repository:
 
 AI-Automation-Internship
 
-Added the Day-03 folder to organize today's work.
+Added:
+
+- README.md
+- Day-03 folder
 
 ---
 
-## Task 3: Open Source Contribution
+## Task 3 – Open Source Contribution
 
 ### Repository
 
-Jobs_Applier_AI_Agent_AIHawk
+AIHawk – Jobs Applier AI Agent
 
 Original Repository:
 
@@ -38,24 +47,26 @@ https://github.com/feder-cr/Jobs_Applier_AI_Agent_AIHawk
 
 ### Project Overview
 
-AIHawk is an open-source AI-powered job application automation tool that helps users automate the job application process using browser automation and artificial intelligence.
+AIHawk is an open-source AI-powered job application assistant that automates job applications using artificial intelligence.
 
 ### My Contribution
 
-While exploring the repository, I found that `CONTRIBUTING.md` referenced a file:
+I identified a broken documentation reference in `CONTRIBUTING.md`.
+
+The file referenced:
 
 ```
-docs/development_diagrams.md
+./docs/development_diagrams.md
 ```
 
-The file did not exist, causing the documentation link to break.
+However, the `docs` directory and referenced file were missing from the repository.
 
-I fixed the issue by removing the broken documentation link from the table of contents.
+I removed the broken link from the Table of Contents to improve the documentation.
 
-### Git Workflow Followed
+### Git Workflow
 
 - Forked the repository
-- Cloned the repository
+- Cloned it locally
 - Created a feature branch
 - Modified CONTRIBUTING.md
 - Committed the changes
@@ -68,6 +79,24 @@ I fixed the issue by removing the broken documentation link from the table of co
 Remove broken documentation link from CONTRIBUTING.md
 ```
 
-### Pull Request
+---
 
-Submitted successfully to the original repository.
+## Screenshots
+
+- Forked Repository
+- Cloned Repository
+- Pull Request
+- Files Changed
+
+---
+
+## Skills Learned
+
+- Git Basics
+- GitHub Workflow
+- Forking
+- Cloning
+- Branching
+- Commits
+- Pull Requests
+- Open Source Contribution
