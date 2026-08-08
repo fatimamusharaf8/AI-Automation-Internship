@@ -1,0 +1,743 @@
+{
+  "name": "MATalogics Lead Management API",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "create-lead",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f9f174ae-752c-4c45-b676-824ca1758455",
+      "name": "Webhook",
+      "webhookId": "2ddc5314-1f0f-48a1-b3f7-bbc09525f1ec"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5b1cecf0-2cdb-48bb-a364-4a67debb19d4",
+              "name": "name",
+              "value": "={{$json.body.name}}",
+              "type": "string"
+            },
+            {
+              "id": "1daa6771-1c7f-4c60-a35d-7e8fcaa9f555",
+              "name": "email",
+              "value": "={{$json.body.email}}",
+              "type": "string"
+            },
+            {
+              "id": "03cc7b24-dfcb-4c57-b4b7-878f80b11484",
+              "name": "phone",
+              "value": "={{$json.body.phone}}",
+              "type": "string"
+            },
+            {
+              "id": "31c31465-9188-4767-9705-49694433bf99",
+              "name": "company",
+              "value": "={{$json.body.company}}",
+              "type": "string"
+            },
+            {
+              "id": "53472d0a-f5c3-4715-bb5a-5f037bdf06cd",
+              "name": "interest",
+              "value": "={{$json.body.interest}}",
+              "type": "string"
+            },
+            {
+              "id": "54986544-ab5c-4ddd-9f2a-09869ae49d85",
+              "name": "created_at",
+              "value": "={{$now}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "2fea6202-6961-4328-ac9d-53fe8f9610c0",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1m2Jq3Q6sSLOXEYai9YFEfWt9ZvvWKvCbosX8Ot07aMg",
+          "mode": "list",
+          "cachedResultName": "Lead Management",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1m2Jq3Q6sSLOXEYai9YFEfWt9ZvvWKvCbosX8Ot07aMg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1m2Jq3Q6sSLOXEYai9YFEfWt9ZvvWKvCbosX8Ot07aMg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Created At": "={{$json.created_at}}",
+            "Interest": "={{$json.interest}}",
+            "Company": "={{$json.company}}",
+            "Phone": "={{$json.phone}}",
+            "Email": "={{$json.email}}",
+            "Name": "={{$json.name}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Interest",
+              "displayName": "Interest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Created At",
+              "displayName": "Created At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        0
+      ],
+      "id": "1949437d-a182-4d8f-9968-393b3895b760",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IyU6pzZ9BvtkM2iC",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": true,\n  \"message\": \"Lead created successfully\"\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        672,
+        0
+      ],
+      "id": "c1ad03e9-1a3b-4195-a0b9-b16d4dddb0d0",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "path": "get-leads",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        176
+      ],
+      "id": "ef5710cd-7f5a-4c50-96dc-888cc7fb2c97",
+      "name": "Webhook1",
+      "webhookId": "f3b08316-89ab-43dd-bfa4-93b3b448084c"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1m2Jq3Q6sSLOXEYai9YFEfWt9ZvvWKvCbosX8Ot07aMg",
+          "mode": "list",
+          "cachedResultName": "Lead Management",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1m2Jq3Q6sSLOXEYai9YFEfWt9ZvvWKvCbosX8Ot07aMg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1m2Jq3Q6sSLOXEYai9YFEfWt9ZvvWKvCbosX8Ot07aMg/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        176
+      ],
+      "id": "08749485-6230-4d3d-880e-734fc3539cc8",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IyU6pzZ9BvtkM2iC",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        432,
+        176
+      ],
+      "id": "c0689e52-2d25-404b-8096-63ec74851be9",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "PUT",
+        "path": "update-lead",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        352
+      ],
+      "id": "17aa9534-cdad-4aaa-a46a-7ac3d445b028",
+      "name": "Webhook2",
+      "webhookId": "4edbe495-1d55-443e-8bfd-7844ad435973"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "304028ae-b48a-4ce4-ae4b-06838f88de44",
+              "name": "email",
+              "value": "={{$json.body.email}}",
+              "type": "string"
+            },
+            {
+              "id": "a3b9ccc1-cffd-468a-99cd-586a1b0ab5fb",
+              "name": "phone",
+              "value": "={{$json.body.phone}}",
+              "type": "string"
+            },
+            {
+              "id": "8321f6a8-39b9-4e88-ab3c-89c8709adc46",
+              "name": "",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "679b2061-fa85-4b49-8216-3ff3246894ad",
+              "name": "company",
+              "value": "={{$json.body.company}}",
+              "type": "string"
+            },
+            {
+              "id": "867c56c7-8a26-469f-b80a-d99df7c96cf2",
+              "name": "interest",
+              "value": "={{$json.body.interest}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        208,
+        352
+      ],
+      "id": "03ea6905-1bac-48c5-af5b-2d937a59ef74",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1m2Jq3Q6sSLOXEYai9YFEfWt9ZvvWKvCbosX8Ot07aMg",
+          "mode": "list",
+          "cachedResultName": "Lead Management",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1m2Jq3Q6sSLOXEYai9YFEfWt9ZvvWKvCbosX8Ot07aMg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1m2Jq3Q6sSLOXEYai9YFEfWt9ZvvWKvCbosX8Ot07aMg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{$json.name}}",
+            "Email": "={{$json.email}}",
+            "Phone": "={{$json.phone}}",
+            "Company": "={{$json.company}}",
+            "Interest": "={{$json.interest}}"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Interest",
+              "displayName": "Interest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Created At",
+              "displayName": "Created At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        672,
+        352
+      ],
+      "id": "a12133f8-fc55-49fd-b546-153d16fa66fc",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IyU6pzZ9BvtkM2iC",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": true,\n  \"message\": \"Lead updated successfully\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        896,
+        352
+      ],
+      "id": "3cd630b7-233d-4e48-87f3-68c29b6dfda4",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "httpMethod": "DELETE",
+        "path": "delete-lead",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        528
+      ],
+      "id": "0b6aa3d4-47e3-4328-80ef-6697b5ef9325",
+      "name": "Webhook3",
+      "webhookId": "6f7480e9-6241-4479-b342-c0440ba9885e"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c4bb3dbb-6be6-4339-b353-7ec704531778",
+              "name": "email",
+              "value": "={{$json.body.email}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        208,
+        528
+      ],
+      "id": "001b3502-5895-4b30-b2f1-65e74f90b536",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "documentId": {
+          "__rl": true,
+          "value": "1m2Jq3Q6sSLOXEYai9YFEfWt9ZvvWKvCbosX8Ot07aMg",
+          "mode": "list",
+          "cachedResultName": "Lead Management",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1m2Jq3Q6sSLOXEYai9YFEfWt9ZvvWKvCbosX8Ot07aMg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1m2Jq3Q6sSLOXEYai9YFEfWt9ZvvWKvCbosX8Ot07aMg/edit#gid=0"
+        },
+        "startIndex": "={{$json.row_number}}"
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        656,
+        528
+      ],
+      "id": "6d92d26e-4357-44ca-895d-8baea07fdb54",
+      "name": "Delete rows or columns from sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IyU6pzZ9BvtkM2iC",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": true,\n  \"message\": \"Lead deleted successfully\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        880,
+        528
+      ],
+      "id": "4db9e871-2904-44ca-a306-290e5c6bc3de",
+      "name": "Respond to Webhook3"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1m2Jq3Q6sSLOXEYai9YFEfWt9ZvvWKvCbosX8Ot07aMg",
+          "mode": "list",
+          "cachedResultName": "Lead Management",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1m2Jq3Q6sSLOXEYai9YFEfWt9ZvvWKvCbosX8Ot07aMg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1m2Jq3Q6sSLOXEYai9YFEfWt9ZvvWKvCbosX8Ot07aMg/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{$json.email}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        432,
+        528
+      ],
+      "id": "17af7b49-da77-46a7-bc34-9efc05f57c53",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IyU6pzZ9BvtkM2iC",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete rows or columns from sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Delete rows or columns from sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "fb52edbb-db36-4e60-9b28-0425db233f2a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2db1ba461b96987d2b3faad85c20b35bdeeff66714eeac666e0e7d5855a561a7"
+  },
+  "nodeGroups": [],
+  "id": "grAbmHI9ojYkLv5w",
+  "tags": []
+}
