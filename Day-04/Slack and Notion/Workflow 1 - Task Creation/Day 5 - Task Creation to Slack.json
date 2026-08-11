@@ -1,0 +1,93 @@
+{
+  "name": "Day 5 - Task Creation to Slack",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "authentication": "oAuth2",
+        "dataSourceId": {
+          "__rl": true,
+          "value": "3b826ebd-a903-8059-b66b-000b66427a5c",
+          "mode": "list",
+          "cachedResultName": "3b826ebd-a903-8059-b66b-000b66427a5c",
+          "cachedResultUrl": "https://app.notion.com/p/3b826ebda903804ab9b4e7591b5365d6"
+        }
+      },
+      "type": "n8n-nodes-base.notionTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7c2e8d58-ff1a-4539-a52b-5bf0a1ee57ae",
+      "name": "Notion Trigger",
+      "credentials": {
+        "notionOAuth2Api": {
+          "id": "IkpNE2ov9PDqs2vf",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "=C0BQ4HY692L",
+          "mode": "id"
+        },
+        "text": "=📋 New Task Created!  Task:{{ $json['Task Name'] }}  Status:{{ $json.Status }}  Priority:{{ $json.Priority }}  Due Date:{{ $json['due date'] }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.6,
+      "position": [
+        224,
+        0
+      ],
+      "id": "fb94d3e2-b164-4a90-8705-59be629c19a3",
+      "name": "Send a message",
+      "webhookId": "a69eaf12-dd1a-4cd0-85cb-032ed836ecf6",
+      "credentials": {
+        "slackApi": {
+          "id": "Mrbor98ugvW1cTUk",
+          "name": "Slack account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Notion Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "670e4d7a-8d1b-4bdc-9a16-43221a4a2b40",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "72d08d5cf67c7801ab3a5a6bb8cb00e235dbc9b32e2701e31f4071aba13e1879"
+  },
+  "nodeGroups": [],
+  "id": "w6mFxFJadddW0yLP",
+  "tags": []
+}
