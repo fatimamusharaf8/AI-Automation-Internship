@@ -1,6 +1,3 @@
-Day 03 – GitHub, APIs & Postman
-Practiced Git & GitHub and contributed to an open-source AI Agent project.
-Learned API fundamentals and REST methods.
-Built a Lead Management API using n8n Webhooks and Google Sheets.
-Tested POST, GET, PUT, and DELETE endpoints using Postman.
-Exported Postman collections and n8n workflow for submission.
+AI Automation Internship — MATalogics
+
+This repository documents my hands-on journey through the AI Automation Internship at MATalogics, covering no-code/low-code tools, workflow automation, AI agents, APIs, integrations, and real-world business automation projects. Each day contains the completed tasks, workflows, documentation, and supporting screenshots.
