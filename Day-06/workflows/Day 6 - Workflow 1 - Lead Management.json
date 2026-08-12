@@ -1,0 +1,98 @@
+{
+  "name": "Day 6 - Workflow 1 - Lead Management",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "authentication": "airtableTokenApi",
+        "baseId": {
+          "__rl": true,
+          "value": "https://airtable.com/appLKijSjKvlUoNzz/tblOuQ1y6TnpK9bxd/viwXT7ueNff19kosP?blocks=hide",
+          "mode": "url"
+        },
+        "tableId": {
+          "__rl": true,
+          "value": "https://airtable.com/appLKijSjKvlUoNzz/tblOuQ1y6TnpK9bxd/viwXT7ueNff19kosP?blocks=hide",
+          "mode": "url"
+        },
+        "triggerField": "Created time",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.airtableTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        32
+      ],
+      "id": "0598c45d-5045-454f-9c33-8491c1755aae",
+      "name": "Airtable Trigger",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "gwb6nwvzoQC6ZNbN",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0BQ4HY692L",
+          "mode": "id"
+        },
+        "text": "=🔔 New Lead Received  Lead: {{$json.fields[\"Lead Name\"]}}\nSource: {{$json.fields[\"Source\"]}}\nContact: {{$json.fields[\"Contact Number\"]}} Interested Service: {{$json.fields[\"Interested Service\"]}}\nStatus: {{$json.fields[\"Status\"]}}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        224,
+        32
+      ],
+      "id": "142b6194-92a0-4de8-abd8-e7a39d9eb278",
+      "name": "Send a message",
+      "webhookId": "a70a93f8-cf71-4737-a537-4a833e99a17e",
+      "credentials": {
+        "slackApi": {
+          "id": "Mrbor98ugvW1cTUk",
+          "name": "Slack account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Airtable Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "ad9b974e-50e3-4db1-8078-2580cb1c0551",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "72d08d5cf67c7801ab3a5a6bb8cb00e235dbc9b32e2701e31f4071aba13e1879"
+  },
+  "nodeGroups": [],
+  "id": "TKQIt9IMITclBKoT",
+  "tags": []
+}

@@ -1,0 +1,143 @@
+{
+  "name": "Day 6 - Workflow 4 - AI Agent Monitoring",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "authentication": "airtableTokenApi",
+        "baseId": {
+          "__rl": true,
+          "value": "https://airtable.com/appLKijSjKvlUoNzz/tbl9MgSf0Obd9zJ0Q/viwhpEISVnpUMXbDb?blocks=hide",
+          "mode": "url"
+        },
+        "tableId": {
+          "__rl": true,
+          "value": "https://airtable.com/appLKijSjKvlUoNzz/tbl9MgSf0Obd9zJ0Q/viwhpEISVnpUMXbDb?blocks=hide",
+          "mode": "url"
+        },
+        "triggerField": "Last Updated",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.airtableTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "31832220-96fd-41a9-9d9a-c26164bcd464",
+      "name": "Airtable Trigger",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "gwb6nwvzoQC6ZNbN",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4435ccc5-174b-4b9a-805c-b99e480475d7",
+              "leftValue": "={{ $('Airtable Trigger').item.json.fields['Deployment Status'] }}",
+              "rightValue": "Active",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        0
+      ],
+      "id": "d4ca8147-037a-460b-8cfd-b5f079418a6e",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "=C0BQ4HY692L",
+          "mode": "id"
+        },
+        "text": "=🤖 AI Agent Status Update  Agent: {{ $('Airtable Trigger').item.json.fields['Agent Name'] }} Type: {{ $('Airtable Trigger').item.json.fields['Type'] }} Deployment Status: {{ $('Airtable Trigger').item.json.fields['Deployment Status'] }} Last Updated: {{ $('Airtable Trigger').item.json.fields['Last Updated'] }}  Operations team has been notified.",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        464,
+        -48
+      ],
+      "id": "21989854-bd77-450e-96ea-5a2489205936",
+      "name": "Send a message",
+      "webhookId": "11792623-2e78-4791-af69-f966e8ad9330",
+      "credentials": {
+        "slackApi": {
+          "id": "Mrbor98ugvW1cTUk",
+          "name": "Slack account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Airtable Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "8b6ce994-5f99-4109-9875-fd2dd02dbdd9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "72d08d5cf67c7801ab3a5a6bb8cb00e235dbc9b32e2701e31f4071aba13e1879"
+  },
+  "nodeGroups": [],
+  "id": "PclrIWtbLa3OYZRF",
+  "tags": []
+}
