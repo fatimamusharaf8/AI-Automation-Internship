@@ -1,0 +1,1896 @@
+{
+  "name": "AI Client Onboarding System",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "client-onboarding",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "883034e8-f8c3-47e8-a875-abdde487d5f5",
+      "name": "Webhook",
+      "webhookId": "f29e2a9b-15a6-4cd9-a114-b956d805bdf3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f5de39d5-2208-4321-b392-2df3568d5ea7",
+              "leftValue": "={{ $json.body.message.type }}",
+              "rightValue": "end-of-call-report",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        0
+      ],
+      "id": "abd9c086-f8ed-4b4e-ad62-48257e64d48c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c7f7e74b-47ef-48fa-87a2-94781cdcf62e",
+              "name": "client_name",
+              "value": "={{ $json.body.message.artifact.structuredOutputs[\"a872609f-491f-400f-869a-c9bf0c44fbab\"].result.client_name }}",
+              "type": "string"
+            },
+            {
+              "id": "d8221497-67fa-40d1-9fcc-678f44e8c859",
+              "name": "company",
+              "value": "={{ $json.body.message.artifact.structuredOutputs[\"a872609f-491f-400f-869a-c9bf0c44fbab\"].result.company }}",
+              "type": "string"
+            },
+            {
+              "id": "898cde38-04e3-4051-b227-2e717855b5d0",
+              "name": "email",
+              "value": "={{ $json.body.message.artifact.structuredOutputs[\"a872609f-491f-400f-869a-c9bf0c44fbab\"].result.email }}",
+              "type": "string"
+            },
+            {
+              "id": "4e2953e2-39d7-426b-aebc-e81c63141db6",
+              "name": "service",
+              "value": "={{ $json.body.message.artifact.structuredOutputs[\"a872609f-491f-400f-869a-c9bf0c44fbab\"].result.service }}",
+              "type": "string"
+            },
+            {
+              "id": "62dbea70-2ab2-4fc9-978e-1ef9b594cee3",
+              "name": "description",
+              "value": "={{ $json.body.message.artifact.structuredOutputs[\"a872609f-491f-400f-869a-c9bf0c44fbab\"].result.description }}",
+              "type": "string"
+            },
+            {
+              "id": "fbfcecee-1f37-4b50-91d6-390d83b2756e",
+              "name": "budget",
+              "value": "={{ $json.body.message.artifact.structuredOutputs[\"a872609f-491f-400f-869a-c9bf0c44fbab\"].result.budget }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        448,
+        -48
+      ],
+      "id": "91abf38d-b992-45df-bbb5-0235c06557fd",
+      "name": "Extract Client Data"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI Client Intake Classification Agent.\n\nAnalyze the client onboarding information below.\n\nClient Name:\n{{ $json.client_name }}\n\nCompany:\n{{ $json.company }}\n\nEmail:\n{{ $json.email }}\n\nService Required:\n{{ $json.service }}\n\nProject Description:\n{{ $json.description }}\n\nBudget:\n{{ $json.budget }} PKR\n\nYour task is to generate:\n\n1. service_category\n2. priority\n3. summary\n4. next_action\n\nPriority rules MUST be followed exactly:\n\n- Budget >= 500000 → HIGH\n- Budget >= 200000 and < 500000 → MEDIUM\n- Budget < 200000 → LOW\n\nClassify the service into a suitable category, such as:\n- Web & Mobile Development\n- AI & Automation\n- Software Development\n- Digital Marketing\n- UI/UX Design\n- Other\n\nWrite a short professional summary of the client's requirement.\n\nRecommend the most appropriate next action for the team.\n\nReturn ONLY valid JSON in exactly this format:\n\n{\n  \"service_category\": \"string\",\n  \"priority\": \"HIGH\",\n  \"summary\": \"string\",\n  \"next_action\": \"string\"\n}",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        672,
+        -48
+      ],
+      "id": "b07dac67-48f4-44ce-bcfa-de88da8d9839",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        608,
+        176
+      ],
+      "id": "c031af6f-f99c-4287-84ac-6cb151246c11",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "qKn3BAI9xcavAGg2",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"service_category\": \"Web & Mobile Development\",\n  \"priority\": \"HIGH\",\n  \"summary\": \"Restaurant requires website and mobile ordering application.\",\n  \"next_action\": \"Schedule technical consultation\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        816,
+        160
+      ],
+      "id": "acdf888a-6545-4068-819d-ac93d461675d",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appSqamJDBdDUmKA0",
+          "mode": "list",
+          "cachedResultName": "Day-07-Client Onboarding",
+          "cachedResultUrl": "https://airtable.com/appSqamJDBdDUmKA0"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblqUi2hiOdIuLv5C",
+          "mode": "list",
+          "cachedResultName": "Client Onboarding",
+          "cachedResultUrl": "https://airtable.com/appSqamJDBdDUmKA0/tblqUi2hiOdIuLv5C"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Client Name": "={{ $('Extract Client Data').item.json.client_name }}",
+            "Company": "={{ $('Extract Client Data').item.json.company }}",
+            "Email": "={{ $('Extract Client Data').item.json.email }}",
+            "Service": "={{ $('Extract Client Data').item.json.service }}",
+            "Description": "={{ $('Extract Client Data').item.json.description }}",
+            "Budget": "={{ $('Extract Client Data').item.json.budget }}",
+            "Category": "={{ $json.output.service_category }}",
+            "Summary": "={{ $json.output.summary }}",
+            "Next Action": "={{ $json.output.next_action }}",
+            "Created At": "={{ $now }}",
+            "Status": "New",
+            "Priority": "={{ $json.output.priority }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Client Name",
+              "displayName": "Client Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Service",
+              "displayName": "Service",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Budget",
+              "displayName": "Budget",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "HIGH",
+                  "value": "HIGH"
+                },
+                {
+                  "name": "MEDIUM",
+                  "value": "MEDIUM"
+                },
+                {
+                  "name": "LOW",
+                  "value": "LOW"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Next Action",
+              "displayName": "Next Action",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "New",
+                  "value": "New"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Created At",
+              "displayName": "Created At",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        1040,
+        -48
+      ],
+      "id": "ab905ebe-3aa1-4edc-9909-2e2dede383cd",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "gwb6nwvzoQC6ZNbN",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "databasePage",
+        "dataSourceId": {
+          "__rl": true,
+          "value": "3bc26ebd-a903-8029-b936-000b18135788",
+          "mode": "list",
+          "cachedResultName": "Day-07-Client Projects",
+          "cachedResultUrl": "https://app.notion.com/p/3bc26ebda903807c8d47d16b8db48ab9"
+        },
+        "title": "={{ $('Extract Client Data').item.json.client_name }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Budget|number",
+              "numberValue": "={{ $json.fields.Budget }}"
+            },
+            {
+              "key": "Next action|rich_text",
+              "textContent": "={{ $json.fields[\"Next Action\"] }}"
+            },
+            {
+              "key": "Priority|select",
+              "selectValue": "={{ $json.fields.Priority }}"
+            },
+            {
+              "key": "Select|select",
+              "selectValue": "={{ $json.fields.Status }}"
+            },
+            {
+              "key": "Service|rich_text",
+              "textContent": "={{ $json.fields.Service }}"
+            },
+            {
+              "key": "Summary|rich_text",
+              "textContent": "={{ $json.fields.Summary }}"
+            }
+          ]
+        },
+        "blockUi": {
+          "blockValues": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 3,
+      "position": [
+        1264,
+        -32
+      ],
+      "id": "c1ca6690-32f4-4e5c-86c7-c5f19071b084",
+      "name": "Create a database page",
+      "credentials": {
+        "notionOAuth2Api": {
+          "id": "IkpNE2ov9PDqs2vf",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0BQB4GBFC1",
+          "mode": "id"
+        },
+        "text": "={{    $json.priority === \"HIGH\"      ? \"🔥 HIGH PRIORITY CLIENT\"      : $json.priority === \"MEDIUM\"        ? \"⚠️ MEDIUM PRIORITY CLIENT\"        : \"📋 STANDARD CLIENT\" }} \n{{ $('Extract Client Data').item.json.client_name }} - {{ $('Extract Client Data').item.json.company }}  Service: {{ $('Extract Client Data').item.json.service }}  \nBudget: PKR {{ $('Extract Client Data').item.json.budget }}  \nPriority: {{ $json.property_priority }}  \nAI Summary: {{ $json.property_summary }}\nNext Action: {{ $json.property_next_action }} \n\nAirtable + Notion records created successfully.",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        1488,
+        -32
+      ],
+      "id": "f0f423fd-0e34-44be-9996-adfaf8a7ee57",
+      "name": "Send a message",
+      "webhookId": "94aba7c0-04b2-4e51-a08e-bba070780ab9",
+      "credentials": {
+        "slackApi": {
+          "id": "Mrbor98ugvW1cTUk",
+          "name": "Slack account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "fatimamusharaf4.app.n8n.cloud",
+            "user-agent": "axios/1.19.0",
+            "content-length": "32779",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "54.202.58.206",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "US",
+            "cf-ray": "a2b0488dee50b57f-PDX",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "cookie": "callId=01a00071-79de-7559-9a70-7ace0f78428a",
+            "x-call-id": "01a00071-79de-7559-9a70-7ace0f78428a",
+            "x-forwarded-for": "54.202.58.206, 104.23.160.30",
+            "x-forwarded-host": "fatimamusharaf4.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-29-669b78b6dd-rtcpl",
+            "x-is-trusted": "yes",
+            "x-real-ip": "54.202.58.206",
+            "x-vapi-secret": ""
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "message": {
+              "timestamp": 1786713904287,
+              "type": "end-of-call-report",
+              "analysis": {},
+              "artifact": {
+                "messages": [
+                  {
+                    "role": "system",
+                    "message": "You are the Client Onboarding Agent.\n\nYour job is to collect exactly six pieces of information from a new client:\n\n1. Client name\n2. Company name\n3. Email\n4. Service required\n5. Project description\n6. Budget\n\nCONVERSATION RULES:\n\n* Be friendly, professional, and concise.\n* Ask questions naturally.\n* Ask for missing information only.\n* Do not ask for information that the client has already provided.\n* If the client provides multiple pieces of information at once, extract all of them.\n* Ask one question at a time when possible.\n* If an answer is unclear, politely ask the client to clarify.\n* Do not ask for information outside the six required fields.\n* Preserve the client's budget accurately, including the currency if they mention one.\n\nREQUIRED INFORMATION:\n\nclient_name\ncompany\nemail\nservice\ndescription\nbudget\n\nCOMPLETION:\n\nAfter collecting all six pieces of information:\n\n1. Briefly summarize the information.\n2. Ask the client to confirm that it is correct.\n3. After confirmation, thank the client and end the conversation.\n\nIMPORTANT:\n\nDo not calculate lead priority.\nDo not generate service category.\nDo not generate the AI summary.\nDo not generate the recommended next action.\n\nThose tasks will be handled later by the n8n AI processing workflow.\n",
+                    "time": 1786713832073,
+                    "secondsFromStart": 0
+                  },
+                  {
+                    "role": "bot",
+                    "message": "Hi, I'm the client onboarding agent. I'll collect a few details about your project so our team can get started. Could you please tell me your name and company name?",
+                    "time": 1786713833698,
+                    "endTime": 1786713841618,
+                    "secondsFromStart": 1.32,
+                    "duration": 7920,
+                    "source": "",
+                    "assistantName": "Client Onboarding Agent",
+                    "assistantId": "7b76379b-ba81-4e15-ac84-252325edad81"
+                  },
+                  {
+                    "role": "user",
+                    "message": "My name is Fatima, and my company name is ABC Restaurant. My email address is fatima@example.com. Uh, I want a website for my business, and. My. Budget is 6 lakh PKR, and the description of the project is that I want a website. Where users can place their orders.",
+                    "time": 1786713843429,
+                    "endTime": 1786713859929,
+                    "secondsFromStart": 11.051,
+                    "duration": 14580,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "My",
+                          "start": 10.98,
+                          "end": 11.04,
+                          "confidence": 0.992,
+                          "punctuated_word": "My",
+                          "language": "en"
+                        },
+                        {
+                          "word": "name",
+                          "start": 11.16,
+                          "end": 11.22,
+                          "confidence": 1,
+                          "punctuated_word": "name",
+                          "language": "en"
+                        },
+                        {
+                          "word": "is",
+                          "start": 11.34,
+                          "end": 11.4,
+                          "confidence": 1,
+                          "punctuated_word": "is",
+                          "language": "en"
+                        },
+                        {
+                          "word": "F",
+                          "start": 11.52,
+                          "end": 11.58,
+                          "confidence": 0.999,
+                          "punctuated_word": "F",
+                          "language": "en"
+                        },
+                        {
+                          "word": "at",
+                          "start": 11.64,
+                          "end": 11.7,
+                          "confidence": 0.88,
+                          "punctuated_word": "at",
+                          "language": "en"
+                        },
+                        {
+                          "word": "ima,",
+                          "start": 11.82,
+                          "end": 11.88,
+                          "confidence": 0.969,
+                          "punctuated_word": "ima,",
+                          "language": "en"
+                        },
+                        {
+                          "word": "and",
+                          "start": 12,
+                          "end": 12.06,
+                          "confidence": 1,
+                          "punctuated_word": "and",
+                          "language": "en"
+                        },
+                        {
+                          "word": "my",
+                          "start": 12.12,
+                          "end": 12.18,
+                          "confidence": 0.999,
+                          "punctuated_word": "my",
+                          "language": "en"
+                        },
+                        {
+                          "word": "company",
+                          "start": 12.36,
+                          "end": 12.42,
+                          "confidence": 0.996,
+                          "punctuated_word": "company",
+                          "language": "en"
+                        },
+                        {
+                          "word": "name",
+                          "start": 12.66,
+                          "end": 12.72,
+                          "confidence": 0.998,
+                          "punctuated_word": "name",
+                          "language": "en"
+                        },
+                        {
+                          "word": "is",
+                          "start": 12.84,
+                          "end": 12.9,
+                          "confidence": 1,
+                          "punctuated_word": "is",
+                          "language": "en"
+                        },
+                        {
+                          "word": "A",
+                          "start": 13.02,
+                          "end": 13.08,
+                          "confidence": 0.983,
+                          "punctuated_word": "A",
+                          "language": "en"
+                        },
+                        {
+                          "word": "B",
+                          "start": 13.14,
+                          "end": 13.2,
+                          "confidence": 0.927,
+                          "punctuated_word": "B",
+                          "language": "en"
+                        },
+                        {
+                          "word": "C",
+                          "start": 13.32,
+                          "end": 13.38,
+                          "confidence": 0.998,
+                          "punctuated_word": "C",
+                          "language": "en"
+                        },
+                        {
+                          "word": "R",
+                          "start": 13.56,
+                          "end": 13.62,
+                          "confidence": 0.647,
+                          "punctuated_word": "R",
+                          "language": "en"
+                        },
+                        {
+                          "word": "esta",
+                          "start": 13.74,
+                          "end": 13.8,
+                          "confidence": 0.899,
+                          "punctuated_word": "esta",
+                          "language": "en"
+                        },
+                        {
+                          "word": "ur",
+                          "start": 13.8,
+                          "end": 13.86,
+                          "confidence": 1,
+                          "punctuated_word": "ur",
+                          "language": "en"
+                        },
+                        {
+                          "word": "ant.",
+                          "start": 13.92,
+                          "end": 13.98,
+                          "confidence": 0.62,
+                          "punctuated_word": "ant.",
+                          "language": "en"
+                        },
+                        {
+                          "word": "My",
+                          "start": 14.04,
+                          "end": 14.1,
+                          "confidence": 1,
+                          "punctuated_word": "My",
+                          "language": "en"
+                        },
+                        {
+                          "word": "em",
+                          "start": 14.22,
+                          "end": 14.28,
+                          "confidence": 0.998,
+                          "punctuated_word": "em",
+                          "language": "en"
+                        },
+                        {
+                          "word": "ail",
+                          "start": 14.4,
+                          "end": 14.46,
+                          "confidence": 0.999,
+                          "punctuated_word": "ail",
+                          "language": "en"
+                        },
+                        {
+                          "word": "add",
+                          "start": 14.76,
+                          "end": 14.82,
+                          "confidence": 0.998,
+                          "punctuated_word": "add",
+                          "language": "en"
+                        },
+                        {
+                          "word": "ress",
+                          "start": 14.94,
+                          "end": 15,
+                          "confidence": 1,
+                          "punctuated_word": "ress",
+                          "language": "en"
+                        },
+                        {
+                          "word": "is",
+                          "start": 15.12,
+                          "end": 15.18,
+                          "confidence": 1,
+                          "punctuated_word": "is",
+                          "language": "en"
+                        },
+                        {
+                          "word": "fat",
+                          "start": 15.3,
+                          "end": 15.36,
+                          "confidence": 0.985,
+                          "punctuated_word": "fat",
+                          "language": "en"
+                        },
+                        {
+                          "word": "ima",
+                          "start": 15.54,
+                          "end": 15.6,
+                          "confidence": 0.992,
+                          "punctuated_word": "ima",
+                          "language": "en"
+                        },
+                        {
+                          "word": "@",
+                          "start": 15.78,
+                          "end": 15.84,
+                          "confidence": 0.998,
+                          "punctuated_word": "@",
+                          "language": "en"
+                        },
+                        {
+                          "word": "ex",
+                          "start": 16.38,
+                          "end": 16.44,
+                          "confidence": 0.956,
+                          "punctuated_word": "ex",
+                          "language": "en"
+                        },
+                        {
+                          "word": "amp",
+                          "start": 16.5,
+                          "end": 16.56,
+                          "confidence": 0.996,
+                          "punctuated_word": "amp",
+                          "language": "en"
+                        },
+                        {
+                          "word": "le",
+                          "start": 16.68,
+                          "end": 16.74,
+                          "confidence": 0.988,
+                          "punctuated_word": "le",
+                          "language": "en"
+                        },
+                        {
+                          "word": ".com",
+                          "start": 17.04,
+                          "end": 17.1,
+                          "confidence": 1,
+                          "punctuated_word": ".com",
+                          "language": "en"
+                        },
+                        {
+                          "word": ".",
+                          "start": 17.4,
+                          "end": 17.46,
+                          "confidence": 0.772,
+                          "punctuated_word": ".",
+                          "language": "en"
+                        },
+                        {
+                          "word": "U",
+                          "start": 17.52,
+                          "end": 17.58,
+                          "confidence": 0.998,
+                          "punctuated_word": "U",
+                          "language": "en"
+                        },
+                        {
+                          "word": "h,",
+                          "start": 17.64,
+                          "end": 17.7,
+                          "confidence": 0.997,
+                          "punctuated_word": "h,",
+                          "language": "en"
+                        },
+                        {
+                          "word": "I",
+                          "start": 17.7,
+                          "end": 17.76,
+                          "confidence": 1,
+                          "punctuated_word": "I",
+                          "language": "en"
+                        },
+                        {
+                          "word": "w",
+                          "start": 17.88,
+                          "end": 17.94,
+                          "confidence": 0.97,
+                          "punctuated_word": "w",
+                          "language": "en"
+                        },
+                        {
+                          "word": "ant",
+                          "start": 18.06,
+                          "end": 18.12,
+                          "confidence": 0.999,
+                          "punctuated_word": "ant",
+                          "language": "en"
+                        },
+                        {
+                          "word": "a",
+                          "start": 18.18,
+                          "end": 18.24,
+                          "confidence": 0.613,
+                          "punctuated_word": "a",
+                          "language": "en"
+                        },
+                        {
+                          "word": "website",
+                          "start": 18.48,
+                          "end": 18.54,
+                          "confidence": 1,
+                          "punctuated_word": "website",
+                          "language": "en"
+                        },
+                        {
+                          "word": "for",
+                          "start": 18.72,
+                          "end": 18.78,
+                          "confidence": 1,
+                          "punctuated_word": "for",
+                          "language": "en"
+                        },
+                        {
+                          "word": "my",
+                          "start": 18.96,
+                          "end": 19.02,
+                          "confidence": 1,
+                          "punctuated_word": "my",
+                          "language": "en"
+                        },
+                        {
+                          "word": "business",
+                          "start": 19.14,
+                          "end": 19.2,
+                          "confidence": 1,
+                          "punctuated_word": "business",
+                          "language": "en"
+                        },
+                        {
+                          "word": ",",
+                          "start": 19.74,
+                          "end": 19.8,
+                          "confidence": 0.462,
+                          "punctuated_word": ",",
+                          "language": "en"
+                        },
+                        {
+                          "word": "and",
+                          "start": 19.8,
+                          "end": 19.8,
+                          "confidence": 0.861,
+                          "punctuated_word": "and",
+                          "language": "en"
+                        },
+                        {
+                          "word": ".",
+                          "start": 19.8,
+                          "end": 19.8,
+                          "confidence": 0.886,
+                          "punctuated_word": ".",
+                          "language": "en"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "role": "bot",
+                    "message": "Thank you. Fatima. Here's what I have so far: client name Fatima, company name ABC Restaurant, email fatima@example.com, service required, website development, project description you. Want a website where users can place their orders. Budget $6. Pkr. Could you please confirm that all the information is correct?",
+                    "time": 1786713861898,
+                    "endTime": 1786713884458,
+                    "secondsFromStart": 29.52,
+                    "duration": 20580,
+                    "source": "",
+                    "assistantName": "Client Onboarding Agent",
+                    "assistantId": "7b76379b-ba81-4e15-ac84-252325edad81"
+                  },
+                  {
+                    "role": "user",
+                    "message": "Confirm.",
+                    "time": 1786713886989,
+                    "endTime": 1786713887049,
+                    "secondsFromStart": 54.611,
+                    "duration": 60,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "Con",
+                          "start": 54.54,
+                          "end": 54.6,
+                          "confidence": 0.697,
+                          "punctuated_word": "Con",
+                          "language": "en"
+                        },
+                        {
+                          "word": "fir",
+                          "start": 54.6,
+                          "end": 54.6,
+                          "confidence": 0.993,
+                          "punctuated_word": "fir",
+                          "language": "en"
+                        },
+                        {
+                          "word": "m.",
+                          "start": 54.6,
+                          "end": 54.6,
+                          "confidence": 0.946,
+                          "punctuated_word": "m.",
+                          "language": "en"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "role": "bot",
+                    "message": "Thank you for confirming, Fatima. We have all your details: -name. Fatima. Company.",
+                    "time": 1786713888598,
+                    "endTime": 1786713894058,
+                    "secondsFromStart": 56.22,
+                    "duration": 4380,
+                    "source": "",
+                    "assistantName": "Client Onboarding Agent",
+                    "assistantId": "7b76379b-ba81-4e15-ac84-252325edad81"
+                  }
+                ],
+                "messagesOpenAIFormatted": [
+                  {
+                    "role": "system",
+                    "content": "You are the Client Onboarding Agent.\n\nYour job is to collect exactly six pieces of information from a new client:\n\n1. Client name\n2. Company name\n3. Email\n4. Service required\n5. Project description\n6. Budget\n\nCONVERSATION RULES:\n\n* Be friendly, professional, and concise.\n* Ask questions naturally.\n* Ask for missing information only.\n* Do not ask for information that the client has already provided.\n* If the client provides multiple pieces of information at once, extract all of them.\n* Ask one question at a time when possible.\n* If an answer is unclear, politely ask the client to clarify.\n* Do not ask for information outside the six required fields.\n* Preserve the client's budget accurately, including the currency if they mention one.\n\nREQUIRED INFORMATION:\n\nclient_name\ncompany\nemail\nservice\ndescription\nbudget\n\nCOMPLETION:\n\nAfter collecting all six pieces of information:\n\n1. Briefly summarize the information.\n2. Ask the client to confirm that it is correct.\n3. After confirmation, thank the client and end the conversation.\n\nIMPORTANT:\n\nDo not calculate lead priority.\nDo not generate service category.\nDo not generate the AI summary.\nDo not generate the recommended next action.\n\nThose tasks will be handled later by the n8n AI processing workflow.\n"
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "Hi, I'm the client onboarding agent. I'll collect a few details about your project so our team can get started. Could you please tell me your name and company name?"
+                  },
+                  {
+                    "role": "user",
+                    "content": "My name is Fatima, and my company name is ABC Restaurant. My email address is fatima@example.com. Uh, I want a website for my business, and. My. Budget is 6 lakh PKR, and the description of the project is that I want a website. Where users can place their orders."
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "Thank you. Fatima. Here's what I have so far: client name Fatima, company name ABC Restaurant, email fatima@example.com, service required, website development, project description you. Want a website where users can place their orders. Budget $6. Pkr. Could you please confirm that all the information is correct?"
+                  },
+                  {
+                    "role": "user",
+                    "content": "Confirm."
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "Thank you for confirming, Fatima. We have all your details: -name. Fatima. Company."
+                  }
+                ],
+                "transcript": "AI: Hi, I'm the client onboarding agent. I'll collect a few details about your project so our team can get started. Could you please tell me your name and company name?\nUser: My name is Fatima, and my company name is ABC Restaurant. My email address is fatima@example.com. Uh, I want a website for my business, and. My. Budget is 6 lakh PKR, and the description of the project is that I want a website. Where users can place their orders.\nAI: Thank you. Fatima. Here's what I have so far: client name Fatima, company name ABC Restaurant, email fatima@example.com, service required, website development, project description you. Want a website where users can place their orders. Budget $6. Pkr. Could you please confirm that all the information is correct?\nUser: Confirm.\nAI: Thank you for confirming, Fatima. We have all your details: -name. Fatima. Company.\n",
+                "recordingUrl": "https://94bdb67bb98da30b06bdd917725c037d.r2.cloudflarestorage.com/hipaa-recordings/01a00071-79de-7559-9a70-7ace0f78428a-1786713902558-35e07d39-7689-4726-8131-27ace9655a07-mono.wav",
+                "stereoRecordingUrl": "https://94bdb67bb98da30b06bdd917725c037d.r2.cloudflarestorage.com/hipaa-recordings/01a00071-79de-7559-9a70-7ace0f78428a-1786713902558-de9ee9e6-9f8d-4c30-b4d9-e817992e0c50-stereo.wav",
+                "logUrl": "https://94bdb67bb98da30b06bdd917725c037d.r2.cloudflarestorage.com/hipaa-calllogs/6c2568c4-e2eb-4526-a1cc-51eef962363a/01a00071-79de-7559-9a70-7ace0f78428a-c4bf9515-d4ce-479a-bc05-edb8e0427a43-1786713903527.jsonl.gz",
+                "recording": {
+                  "stereoUrl": "https://94bdb67bb98da30b06bdd917725c037d.r2.cloudflarestorage.com/hipaa-recordings/01a00071-79de-7559-9a70-7ace0f78428a-1786713902558-de9ee9e6-9f8d-4c30-b4d9-e817992e0c50-stereo.wav",
+                  "mono": {
+                    "combinedUrl": "https://94bdb67bb98da30b06bdd917725c037d.r2.cloudflarestorage.com/hipaa-recordings/01a00071-79de-7559-9a70-7ace0f78428a-1786713902558-35e07d39-7689-4726-8131-27ace9655a07-mono.wav",
+                    "assistantUrl": "https://94bdb67bb98da30b06bdd917725c037d.r2.cloudflarestorage.com/hipaa-recordings/01a00071-79de-7559-9a70-7ace0f78428a-1786713902558-7401eee7-73a9-4aa0-9c3d-09db06372b1b-mono.wav",
+                    "customerUrl": "https://94bdb67bb98da30b06bdd917725c037d.r2.cloudflarestorage.com/hipaa-recordings/01a00071-79de-7559-9a70-7ace0f78428a-1786713902558-2921d016-bfbd-4b22-9cf5-306515e33a36-mono.wav"
+                  }
+                },
+                "nodes": [],
+                "assistantActivations": [
+                  {
+                    "assistantName": "Client Onboarding Agent",
+                    "assistantId": "7b76379b-ba81-4e15-ac84-252325edad81",
+                    "assistantVersion": "v6"
+                  }
+                ],
+                "variables": {
+                  "now": "Aug 14, 2026, 1:23 PM UTC",
+                  "currentDateTime": "Friday, August 14, 2026 at 1:23 PM UTC",
+                  "date": "Aug 14, 2026 UTC",
+                  "time": "1:23 PM UTC",
+                  "year": "2026",
+                  "month": "August",
+                  "day": "14",
+                  "transport": {
+                    "conversationType": "voice",
+                    "provider": "daily",
+                    "videoRecordingEnabled": false,
+                    "assistantVideoEnabled": false,
+                    "roomDeleteOnUserLeaveEnabled": true,
+                    "callUrl": "https://vapi.daily.co/u7xjbduxBNuQOQJXL7mP"
+                  },
+                  "call": {
+                    "id": "01a00071-79de-7559-9a70-7ace0f78428a",
+                    "type": "webCall",
+                    "status": "queued",
+                    "createdAt": "2026-08-14T13:23:51.902Z",
+                    "transport": {
+                      "conversationType": "voice",
+                      "provider": "daily",
+                      "videoRecordingEnabled": false,
+                      "assistantVideoEnabled": false,
+                      "roomDeleteOnUserLeaveEnabled": true,
+                      "callUrl": "https://vapi.daily.co/u7xjbduxBNuQOQJXL7mP"
+                    }
+                  }
+                },
+                "variableValues": {
+                  "now": "Aug 14, 2026, 1:23 PM UTC",
+                  "currentDateTime": "Friday, August 14, 2026 at 1:23 PM UTC",
+                  "date": "Aug 14, 2026 UTC",
+                  "time": "1:23 PM UTC",
+                  "year": "2026",
+                  "month": "August",
+                  "day": "14",
+                  "transport": {
+                    "conversationType": "voice",
+                    "provider": "daily",
+                    "videoRecordingEnabled": false,
+                    "assistantVideoEnabled": false,
+                    "roomDeleteOnUserLeaveEnabled": true,
+                    "callUrl": "https://vapi.daily.co/u7xjbduxBNuQOQJXL7mP"
+                  },
+                  "call": {
+                    "id": "01a00071-79de-7559-9a70-7ace0f78428a",
+                    "type": "webCall",
+                    "status": "queued",
+                    "createdAt": "2026-08-14T13:23:51.902Z",
+                    "transport": {
+                      "conversationType": "voice",
+                      "provider": "daily",
+                      "videoRecordingEnabled": false,
+                      "assistantVideoEnabled": false,
+                      "roomDeleteOnUserLeaveEnabled": true,
+                      "callUrl": "https://vapi.daily.co/u7xjbduxBNuQOQJXL7mP"
+                    }
+                  }
+                },
+                "performanceMetrics": {
+                  "turnLatencies": [
+                    {
+                      "modelLatency": 478,
+                      "voiceLatency": 336,
+                      "transcriberLatency": 364,
+                      "endpointingLatency": 612,
+                      "turnLatency": 1817
+                    },
+                    {
+                      "modelLatency": 513,
+                      "voiceLatency": 385,
+                      "transcriberLatency": 631,
+                      "endpointingLatency": 5,
+                      "turnLatency": 1544
+                    }
+                  ],
+                  "modelLatencyAverage": 495.5,
+                  "voiceLatencyAverage": 360.5,
+                  "transcriberLatencyAverage": 497.5,
+                  "endpointingLatencyAverage": 308.5,
+                  "turnLatencyAverage": 1680.5,
+                  "fromTransportLatencyAverage": 20,
+                  "toTransportLatencyAverage": 49
+                },
+                "structuredOutputs": {
+                  "a872609f-491f-400f-869a-c9bf0c44fbab": {
+                    "name": "Client Onboarding Data",
+                    "result": {
+                      "email": "fatima@example.com",
+                      "budget": 600000,
+                      "company": "ABC Restaurant",
+                      "service": "website development",
+                      "client_name": "Fatima",
+                      "description": "I want a website where users can place their orders."
+                    },
+                    "compliancePlan": null
+                  }
+                },
+                "scorecards": {},
+                "transfers": [],
+                "presignedLogUrl": "https://hipaa-calllogs.94bdb67bb98da30b06bdd917725c037d.r2.cloudflarestorage.com/6c2568c4-e2eb-4526-a1cc-51eef962363a/01a00071-79de-7559-9a70-7ace0f78428a-c4bf9515-d4ce-479a-bc05-edb8e0427a43-1786713903527.jsonl.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=771595b33453a6e62bc129ad82377afe%2F20260814%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260814T132504Z&X-Amz-Expires=1800&X-Amz-Signature=8436373192a3cdd9a65c4ea54766b9f739a26794a6ce7e22f3b17743751f9883&X-Amz-SignedHeaders=host&x-id=GetObject",
+                "presignedMonoUrl": "https://hipaa-recordings.94bdb67bb98da30b06bdd917725c037d.r2.cloudflarestorage.com/01a00071-79de-7559-9a70-7ace0f78428a-1786713902558-35e07d39-7689-4726-8131-27ace9655a07-mono.wav?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=771595b33453a6e62bc129ad82377afe%2F20260814%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260814T132504Z&X-Amz-Expires=1800&X-Amz-Signature=4f5db4501cd34fa4976e767168862138733e6c21b4c6d847c59a42ce7ce50f68&X-Amz-SignedHeaders=host&x-id=GetObject",
+                "presignedStereoUrl": "https://hipaa-recordings.94bdb67bb98da30b06bdd917725c037d.r2.cloudflarestorage.com/01a00071-79de-7559-9a70-7ace0f78428a-1786713902558-de9ee9e6-9f8d-4c30-b4d9-e817992e0c50-stereo.wav?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=771595b33453a6e62bc129ad82377afe%2F20260814%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260814T132504Z&X-Amz-Expires=1800&X-Amz-Signature=66823e4e7a9558b260581b976359815927d439deef8759fcd671a5b67ef4719f&X-Amz-SignedHeaders=host&x-id=GetObject",
+                "presignedAssistantUrl": "https://hipaa-recordings.94bdb67bb98da30b06bdd917725c037d.r2.cloudflarestorage.com/01a00071-79de-7559-9a70-7ace0f78428a-1786713902558-7401eee7-73a9-4aa0-9c3d-09db06372b1b-mono.wav?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=771595b33453a6e62bc129ad82377afe%2F20260814%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260814T132504Z&X-Amz-Expires=1800&X-Amz-Signature=8ae66aed58f1446730c62fcb0318fe0632a4e2fe781b9c4593aaf7504c7c42d0&X-Amz-SignedHeaders=host&x-id=GetObject",
+                "presignedCustomerUrl": "https://hipaa-recordings.94bdb67bb98da30b06bdd917725c037d.r2.cloudflarestorage.com/01a00071-79de-7559-9a70-7ace0f78428a-1786713902558-2921d016-bfbd-4b22-9cf5-306515e33a36-mono.wav?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=771595b33453a6e62bc129ad82377afe%2F20260814%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260814T132504Z&X-Amz-Expires=1800&X-Amz-Signature=afa2f2bbb46229519535fc2655451a6940e76a35ecdff23145034af544980a5c&X-Amz-SignedHeaders=host&x-id=GetObject",
+                "presignedUrlsExpiresAt": "2026-08-14T13:55:04.279Z"
+              },
+              "startedAt": "2026-08-14T13:23:52.378Z",
+              "endedAt": "2026-08-14T13:24:59.938Z",
+              "endedReason": "customer-ended-call",
+              "cost": 0.0882,
+              "costBreakdown": {
+                "stt": 0.0047,
+                "llm": 0.0061,
+                "tts": 0.0129,
+                "vapi": 0.0563,
+                "chat": 0,
+                "transport": 0,
+                "total": 0.0882,
+                "llmPromptTokens": 2240,
+                "llmCompletionTokens": 205,
+                "llmCachedPromptTokens": 0,
+                "ttsCharacters": 860,
+                "voicemailDetectionCost": 0,
+                "knowledgeBaseCost": 0,
+                "analysisCostBreakdown": {
+                  "summary": 0,
+                  "summaryPromptTokens": 0,
+                  "summaryCompletionTokens": 0,
+                  "summaryCachedPromptTokens": 0,
+                  "structuredData": 0,
+                  "structuredDataPromptTokens": 0,
+                  "structuredDataCompletionTokens": 0,
+                  "structuredDataCachedPromptTokens": 0,
+                  "successEvaluation": 0,
+                  "successEvaluationPromptTokens": 0,
+                  "successEvaluationCompletionTokens": 0,
+                  "successEvaluationCachedPromptTokens": 0,
+                  "structuredOutput": 0.0082,
+                  "structuredOutputPromptTokens": 3905,
+                  "structuredOutputCompletionTokens": 44,
+                  "structuredOutputCachedPromptTokens": 0
+                }
+              },
+              "costs": [
+                {
+                  "type": "transcriber",
+                  "transcriber": {
+                    "provider": "soniox",
+                    "model": "stt-rt-v5"
+                  },
+                  "minutes": 1.0587166666666668,
+                  "cost": 0.0046703
+                },
+                {
+                  "type": "model",
+                  "model": {
+                    "provider": "openai",
+                    "model": "gpt-4.1"
+                  },
+                  "promptTokens": 2240,
+                  "completionTokens": 205,
+                  "cachedPromptTokens": 0,
+                  "reasoningTokens": 0,
+                  "cost": 0.00612
+                },
+                {
+                  "type": "voice",
+                  "voice": {
+                    "provider": "vapi",
+                    "voiceId": "Elliot",
+                    "model": "vapi-v2"
+                  },
+                  "characters": 860,
+                  "cost": 0.0129
+                },
+                {
+                  "type": "vapi",
+                  "subType": "normal",
+                  "minutes": 1.126,
+                  "cost": 0.0563
+                },
+                {
+                  "type": "knowledge-base",
+                  "model": {
+                    "provider": "google",
+                    "model": "gemini-2.5-flash"
+                  },
+                  "promptTokens": 0,
+                  "completionTokens": 0,
+                  "cost": 0
+                },
+                {
+                  "type": "analysis",
+                  "analysisType": "structuredOutput",
+                  "model": {
+                    "provider": "openai",
+                    "model": "gpt-4.1-2025-04-14"
+                  },
+                  "promptTokens": 3905,
+                  "completionTokens": 44,
+                  "cachedPromptTokens": 0,
+                  "cost": 0.008162,
+                  "structuredOutputBreakdown": [
+                    {
+                      "structuredOutputId": "a872609f-491f-400f-869a-c9bf0c44fbab",
+                      "name": "Client Onboarding Data",
+                      "cost": 0.008162,
+                      "promptTokens": 3905,
+                      "completionTokens": 44,
+                      "cachedPromptTokens": 0
+                    }
+                  ]
+                }
+              ],
+              "durationMs": 67560,
+              "durationSeconds": 67.56,
+              "durationMinutes": 1.126,
+              "summary": "",
+              "transcript": "AI: Hi, I'm the client onboarding agent. I'll collect a few details about your project so our team can get started. Could you please tell me your name and company name?\nUser: My name is Fatima, and my company name is ABC Restaurant. My email address is fatima@example.com. Uh, I want a website for my business, and. My. Budget is 6 lakh PKR, and the description of the project is that I want a website. Where users can place their orders.\nAI: Thank you. Fatima. Here's what I have so far: client name Fatima, company name ABC Restaurant, email fatima@example.com, service required, website development, project description you. Want a website where users can place their orders. Budget $6. Pkr. Could you please confirm that all the information is correct?\nUser: Confirm.\nAI: Thank you for confirming, Fatima. We have all your details: -name. Fatima. Company.\n",
+              "messages": [
+                {
+                  "role": "system",
+                  "message": "You are the Client Onboarding Agent.\n\nYour job is to collect exactly six pieces of information from a new client:\n\n1. Client name\n2. Company name\n3. Email\n4. Service required\n5. Project description\n6. Budget\n\nCONVERSATION RULES:\n\n* Be friendly, professional, and concise.\n* Ask questions naturally.\n* Ask for missing information only.\n* Do not ask for information that the client has already provided.\n* If the client provides multiple pieces of information at once, extract all of them.\n* Ask one question at a time when possible.\n* If an answer is unclear, politely ask the client to clarify.\n* Do not ask for information outside the six required fields.\n* Preserve the client's budget accurately, including the currency if they mention one.\n\nREQUIRED INFORMATION:\n\nclient_name\ncompany\nemail\nservice\ndescription\nbudget\n\nCOMPLETION:\n\nAfter collecting all six pieces of information:\n\n1. Briefly summarize the information.\n2. Ask the client to confirm that it is correct.\n3. After confirmation, thank the client and end the conversation.\n\nIMPORTANT:\n\nDo not calculate lead priority.\nDo not generate service category.\nDo not generate the AI summary.\nDo not generate the recommended next action.\n\nThose tasks will be handled later by the n8n AI processing workflow.\n",
+                  "time": 1786713832073,
+                  "secondsFromStart": 0
+                },
+                {
+                  "role": "bot",
+                  "message": "Hi, I'm the client onboarding agent. I'll collect a few details about your project so our team can get started. Could you please tell me your name and company name?",
+                  "time": 1786713833698,
+                  "endTime": 1786713841618,
+                  "secondsFromStart": 1.32,
+                  "duration": 7920,
+                  "source": "",
+                  "assistantName": "Client Onboarding Agent",
+                  "assistantId": "7b76379b-ba81-4e15-ac84-252325edad81"
+                },
+                {
+                  "role": "user",
+                  "message": "My name is Fatima, and my company name is ABC Restaurant. My email address is fatima@example.com. Uh, I want a website for my business, and. My. Budget is 6 lakh PKR, and the description of the project is that I want a website. Where users can place their orders.",
+                  "time": 1786713843429,
+                  "endTime": 1786713859929,
+                  "secondsFromStart": 11.051,
+                  "duration": 14580,
+                  "metadata": {
+                    "wordLevelConfidence": [
+                      {
+                        "word": "My",
+                        "start": 10.98,
+                        "end": 11.04,
+                        "confidence": 0.992,
+                        "punctuated_word": "My",
+                        "language": "en"
+                      },
+                      {
+                        "word": "name",
+                        "start": 11.16,
+                        "end": 11.22,
+                        "confidence": 1,
+                        "punctuated_word": "name",
+                        "language": "en"
+                      },
+                      {
+                        "word": "is",
+                        "start": 11.34,
+                        "end": 11.4,
+                        "confidence": 1,
+                        "punctuated_word": "is",
+                        "language": "en"
+                      },
+                      {
+                        "word": "F",
+                        "start": 11.52,
+                        "end": 11.58,
+                        "confidence": 0.999,
+                        "punctuated_word": "F",
+                        "language": "en"
+                      },
+                      {
+                        "word": "at",
+                        "start": 11.64,
+                        "end": 11.7,
+                        "confidence": 0.88,
+                        "punctuated_word": "at",
+                        "language": "en"
+                      },
+                      {
+                        "word": "ima,",
+                        "start": 11.82,
+                        "end": 11.88,
+                        "confidence": 0.969,
+                        "punctuated_word": "ima,",
+                        "language": "en"
+                      },
+                      {
+                        "word": "and",
+                        "start": 12,
+                        "end": 12.06,
+                        "confidence": 1,
+                        "punctuated_word": "and",
+                        "language": "en"
+                      },
+                      {
+                        "word": "my",
+                        "start": 12.12,
+                        "end": 12.18,
+                        "confidence": 0.999,
+                        "punctuated_word": "my",
+                        "language": "en"
+                      },
+                      {
+                        "word": "company",
+                        "start": 12.36,
+                        "end": 12.42,
+                        "confidence": 0.996,
+                        "punctuated_word": "company",
+                        "language": "en"
+                      },
+                      {
+                        "word": "name",
+                        "start": 12.66,
+                        "end": 12.72,
+                        "confidence": 0.998,
+                        "punctuated_word": "name",
+                        "language": "en"
+                      },
+                      {
+                        "word": "is",
+                        "start": 12.84,
+                        "end": 12.9,
+                        "confidence": 1,
+                        "punctuated_word": "is",
+                        "language": "en"
+                      },
+                      {
+                        "word": "A",
+                        "start": 13.02,
+                        "end": 13.08,
+                        "confidence": 0.983,
+                        "punctuated_word": "A",
+                        "language": "en"
+                      },
+                      {
+                        "word": "B",
+                        "start": 13.14,
+                        "end": 13.2,
+                        "confidence": 0.927,
+                        "punctuated_word": "B",
+                        "language": "en"
+                      },
+                      {
+                        "word": "C",
+                        "start": 13.32,
+                        "end": 13.38,
+                        "confidence": 0.998,
+                        "punctuated_word": "C",
+                        "language": "en"
+                      },
+                      {
+                        "word": "R",
+                        "start": 13.56,
+                        "end": 13.62,
+                        "confidence": 0.647,
+                        "punctuated_word": "R",
+                        "language": "en"
+                      },
+                      {
+                        "word": "esta",
+                        "start": 13.74,
+                        "end": 13.8,
+                        "confidence": 0.899,
+                        "punctuated_word": "esta",
+                        "language": "en"
+                      },
+                      {
+                        "word": "ur",
+                        "start": 13.8,
+                        "end": 13.86,
+                        "confidence": 1,
+                        "punctuated_word": "ur",
+                        "language": "en"
+                      },
+                      {
+                        "word": "ant.",
+                        "start": 13.92,
+                        "end": 13.98,
+                        "confidence": 0.62,
+                        "punctuated_word": "ant.",
+                        "language": "en"
+                      },
+                      {
+                        "word": "My",
+                        "start": 14.04,
+                        "end": 14.1,
+                        "confidence": 1,
+                        "punctuated_word": "My",
+                        "language": "en"
+                      },
+                      {
+                        "word": "em",
+                        "start": 14.22,
+                        "end": 14.28,
+                        "confidence": 0.998,
+                        "punctuated_word": "em",
+                        "language": "en"
+                      },
+                      {
+                        "word": "ail",
+                        "start": 14.4,
+                        "end": 14.46,
+                        "confidence": 0.999,
+                        "punctuated_word": "ail",
+                        "language": "en"
+                      },
+                      {
+                        "word": "add",
+                        "start": 14.76,
+                        "end": 14.82,
+                        "confidence": 0.998,
+                        "punctuated_word": "add",
+                        "language": "en"
+                      },
+                      {
+                        "word": "ress",
+                        "start": 14.94,
+                        "end": 15,
+                        "confidence": 1,
+                        "punctuated_word": "ress",
+                        "language": "en"
+                      },
+                      {
+                        "word": "is",
+                        "start": 15.12,
+                        "end": 15.18,
+                        "confidence": 1,
+                        "punctuated_word": "is",
+                        "language": "en"
+                      },
+                      {
+                        "word": "fat",
+                        "start": 15.3,
+                        "end": 15.36,
+                        "confidence": 0.985,
+                        "punctuated_word": "fat",
+                        "language": "en"
+                      },
+                      {
+                        "word": "ima",
+                        "start": 15.54,
+                        "end": 15.6,
+                        "confidence": 0.992,
+                        "punctuated_word": "ima",
+                        "language": "en"
+                      },
+                      {
+                        "word": "@",
+                        "start": 15.78,
+                        "end": 15.84,
+                        "confidence": 0.998,
+                        "punctuated_word": "@",
+                        "language": "en"
+                      },
+                      {
+                        "word": "ex",
+                        "start": 16.38,
+                        "end": 16.44,
+                        "confidence": 0.956,
+                        "punctuated_word": "ex",
+                        "language": "en"
+                      },
+                      {
+                        "word": "amp",
+                        "start": 16.5,
+                        "end": 16.56,
+                        "confidence": 0.996,
+                        "punctuated_word": "amp",
+                        "language": "en"
+                      },
+                      {
+                        "word": "le",
+                        "start": 16.68,
+                        "end": 16.74,
+                        "confidence": 0.988,
+                        "punctuated_word": "le",
+                        "language": "en"
+                      },
+                      {
+                        "word": ".com",
+                        "start": 17.04,
+                        "end": 17.1,
+                        "confidence": 1,
+                        "punctuated_word": ".com",
+                        "language": "en"
+                      },
+                      {
+                        "word": ".",
+                        "start": 17.4,
+                        "end": 17.46,
+                        "confidence": 0.772,
+                        "punctuated_word": ".",
+                        "language": "en"
+                      },
+                      {
+                        "word": "U",
+                        "start": 17.52,
+                        "end": 17.58,
+                        "confidence": 0.998,
+                        "punctuated_word": "U",
+                        "language": "en"
+                      },
+                      {
+                        "word": "h,",
+                        "start": 17.64,
+                        "end": 17.7,
+                        "confidence": 0.997,
+                        "punctuated_word": "h,",
+                        "language": "en"
+                      },
+                      {
+                        "word": "I",
+                        "start": 17.7,
+                        "end": 17.76,
+                        "confidence": 1,
+                        "punctuated_word": "I",
+                        "language": "en"
+                      },
+                      {
+                        "word": "w",
+                        "start": 17.88,
+                        "end": 17.94,
+                        "confidence": 0.97,
+                        "punctuated_word": "w",
+                        "language": "en"
+                      },
+                      {
+                        "word": "ant",
+                        "start": 18.06,
+                        "end": 18.12,
+                        "confidence": 0.999,
+                        "punctuated_word": "ant",
+                        "language": "en"
+                      },
+                      {
+                        "word": "a",
+                        "start": 18.18,
+                        "end": 18.24,
+                        "confidence": 0.613,
+                        "punctuated_word": "a",
+                        "language": "en"
+                      },
+                      {
+                        "word": "website",
+                        "start": 18.48,
+                        "end": 18.54,
+                        "confidence": 1,
+                        "punctuated_word": "website",
+                        "language": "en"
+                      },
+                      {
+                        "word": "for",
+                        "start": 18.72,
+                        "end": 18.78,
+                        "confidence": 1,
+                        "punctuated_word": "for",
+                        "language": "en"
+                      },
+                      {
+                        "word": "my",
+                        "start": 18.96,
+                        "end": 19.02,
+                        "confidence": 1,
+                        "punctuated_word": "my",
+                        "language": "en"
+                      },
+                      {
+                        "word": "business",
+                        "start": 19.14,
+                        "end": 19.2,
+                        "confidence": 1,
+                        "punctuated_word": "business",
+                        "language": "en"
+                      },
+                      {
+                        "word": ",",
+                        "start": 19.74,
+                        "end": 19.8,
+                        "confidence": 0.462,
+                        "punctuated_word": ",",
+                        "language": "en"
+                      },
+                      {
+                        "word": "and",
+                        "start": 19.8,
+                        "end": 19.8,
+                        "confidence": 0.861,
+                        "punctuated_word": "and",
+                        "language": "en"
+                      },
+                      {
+                        "word": ".",
+                        "start": 19.8,
+                        "end": 19.8,
+                        "confidence": 0.886,
+                        "punctuated_word": ".",
+                        "language": "en"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "role": "bot",
+                  "message": "Thank you. Fatima. Here's what I have so far: client name Fatima, company name ABC Restaurant, email fatima@example.com, service required, website development, project description you. Want a website where users can place their orders. Budget $6. Pkr. Could you please confirm that all the information is correct?",
+                  "time": 1786713861898,
+                  "endTime": 1786713884458,
+                  "secondsFromStart": 29.52,
+                  "duration": 20580,
+                  "source": "",
+                  "assistantName": "Client Onboarding Agent",
+                  "assistantId": "7b76379b-ba81-4e15-ac84-252325edad81"
+                },
+                {
+                  "role": "user",
+                  "message": "Confirm.",
+                  "time": 1786713886989,
+                  "endTime": 1786713887049,
+                  "secondsFromStart": 54.611,
+                  "duration": 60,
+                  "metadata": {
+                    "wordLevelConfidence": [
+                      {
+                        "word": "Con",
+                        "start": 54.54,
+                        "end": 54.6,
+                        "confidence": 0.697,
+                        "punctuated_word": "Con",
+                        "language": "en"
+                      },
+                      {
+                        "word": "fir",
+                        "start": 54.6,
+                        "end": 54.6,
+                        "confidence": 0.993,
+                        "punctuated_word": "fir",
+                        "language": "en"
+                      },
+                      {
+                        "word": "m.",
+                        "start": 54.6,
+                        "end": 54.6,
+                        "confidence": 0.946,
+                        "punctuated_word": "m.",
+                        "language": "en"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "role": "bot",
+                  "message": "Thank you for confirming, Fatima. We have all your details: -name. Fatima. Company.",
+                  "time": 1786713888598,
+                  "endTime": 1786713894058,
+                  "secondsFromStart": 56.22,
+                  "duration": 4380,
+                  "source": "",
+                  "assistantName": "Client Onboarding Agent",
+                  "assistantId": "7b76379b-ba81-4e15-ac84-252325edad81"
+                }
+              ],
+              "recordingUrl": "https://94bdb67bb98da30b06bdd917725c037d.r2.cloudflarestorage.com/hipaa-recordings/01a00071-79de-7559-9a70-7ace0f78428a-1786713902558-35e07d39-7689-4726-8131-27ace9655a07-mono.wav",
+              "stereoRecordingUrl": "https://94bdb67bb98da30b06bdd917725c037d.r2.cloudflarestorage.com/hipaa-recordings/01a00071-79de-7559-9a70-7ace0f78428a-1786713902558-de9ee9e6-9f8d-4c30-b4d9-e817992e0c50-stereo.wav",
+              "call": {
+                "id": "01a00071-79de-7559-9a70-7ace0f78428a",
+                "orgId": "6c2568c4-e2eb-4526-a1cc-51eef962363a",
+                "createdAt": "2026-08-14T13:23:51.902Z",
+                "updatedAt": "2026-08-14T13:23:51.902Z",
+                "type": "webCall",
+                "cost": 0,
+                "monitor": {
+                  "listenUrl": "wss://phone-call-websocket.aws-us-west-2-backend-production2.vapi.ai/01a00071-79de-7559-9a70-7ace0f78428a/listen",
+                  "controlUrl": "https://phone-call-websocket.aws-us-west-2-backend-production2.vapi.ai/01a00071-79de-7559-9a70-7ace0f78428a/control"
+                },
+                "transport": {
+                  "conversationType": "voice",
+                  "provider": "daily",
+                  "videoRecordingEnabled": false,
+                  "assistantVideoEnabled": false,
+                  "roomDeleteOnUserLeaveEnabled": true,
+                  "callUrl": "https://vapi.daily.co/u7xjbduxBNuQOQJXL7mP"
+                },
+                "webCallUrl": "https://vapi.daily.co/u7xjbduxBNuQOQJXL7mP",
+                "status": "queued",
+                "assistantId": "7b76379b-ba81-4e15-ac84-252325edad81",
+                "assistantVersion": "v6",
+                "assistantOverrides": {
+                  "clientMessages": [
+                    "transcript",
+                    "hang",
+                    "metadata",
+                    "tool-calls",
+                    "tool-calls-result",
+                    "tool.completed",
+                    "transfer-update",
+                    "user-interrupted",
+                    "status-update",
+                    "assistant.started"
+                  ],
+                  "variableValues": {}
+                }
+              },
+              "assistant": {
+                "id": "7b76379b-ba81-4e15-ac84-252325edad81",
+                "orgId": "6c2568c4-e2eb-4526-a1cc-51eef962363a",
+                "name": "Client Onboarding Agent",
+                "voice": {
+                  "version": "2",
+                  "voiceId": "Elliot",
+                  "provider": "vapi"
+                },
+                "createdAt": "2026-08-13T10:53:14.595Z",
+                "updatedAt": "2026-08-14T13:03:17.409Z",
+                "model": {
+                  "model": "gpt-4.1",
+                  "messages": [
+                    {
+                      "role": "system",
+                      "content": "You are the Client Onboarding Agent.\n\nYour job is to collect exactly six pieces of information from a new client:\n\n1. Client name\n2. Company name\n3. Email\n4. Service required\n5. Project description\n6. Budget\n\nCONVERSATION RULES:\n\n* Be friendly, professional, and concise.\n* Ask questions naturally.\n* Ask for missing information only.\n* Do not ask for information that the client has already provided.\n* If the client provides multiple pieces of information at once, extract all of them.\n* Ask one question at a time when possible.\n* If an answer is unclear, politely ask the client to clarify.\n* Do not ask for information outside the six required fields.\n* Preserve the client's budget accurately, including the currency if they mention one.\n\nREQUIRED INFORMATION:\n\nclient_name\ncompany\nemail\nservice\ndescription\nbudget\n\nCOMPLETION:\n\nAfter collecting all six pieces of information:\n\n1. Briefly summarize the information.\n2. Ask the client to confirm that it is correct.\n3. After confirmation, thank the client and end the conversation.\n\nIMPORTANT:\n\nDo not calculate lead priority.\nDo not generate service category.\nDo not generate the AI summary.\nDo not generate the recommended next action.\n\nThose tasks will be handled later by the n8n AI processing workflow.\n"
+                    }
+                  ],
+                  "provider": "openai"
+                },
+                "firstMessage": "Hi! I'm the Client Onboarding Agent. I'll collect a few details about your project so our team can get started. Could you please tell me your name and company name?\n",
+                "voicemailMessage": "Please call back when you're available.",
+                "endCallMessage": "Goodbye.",
+                "transcriber": {
+                  "model": "stt-rt-v5",
+                  "language": "en",
+                  "provider": "soniox",
+                  "languages": [
+                    "en"
+                  ],
+                  "fallbackPlan": {
+                    "autoFallback": {
+                      "enabled": true
+                    }
+                  }
+                },
+                "clientMessages": [
+                  "transcript",
+                  "hang",
+                  "metadata",
+                  "tool-calls",
+                  "tool-calls-result",
+                  "tool.completed",
+                  "transfer-update",
+                  "user-interrupted",
+                  "status-update",
+                  "assistant.started"
+                ],
+                "metadata": {
+                  "preset": "balanced:1"
+                },
+                "analysisPlan": {
+                  "summaryPlan": {
+                    "enabled": false
+                  },
+                  "successEvaluationPlan": {
+                    "enabled": false
+                  }
+                },
+                "artifactPlan": {
+                  "structuredOutputIds": [
+                    "a872609f-491f-400f-869a-c9bf0c44fbab"
+                  ]
+                },
+                "server": {
+                  "url": "https://fatimamusharaf4.app.n8n.cloud/webhook/client-onboarding",
+                  "timeoutSeconds": 20
+                },
+                "compliancePlan": {
+                  "pciEnabled": false,
+                  "zdrEnabled": false,
+                  "hipaaEnabled": false
+                },
+                "firstMessageInterruptionsEnabled": false,
+                "latestVersion": "v6"
+              },
+              "assistantVersion": "v6"
+            }
+          },
+          "webhookUrl": "https://fatimamusharaf4.app.n8n.cloud/webhook/client-onboarding",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Extract Client Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Client Data": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a database page": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "bc0e28bc-4fd0-4d2b-8b63-2ca6a3c391a5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "72d08d5cf67c7801ab3a5a6bb8cb00e235dbc9b32e2701e31f4071aba13e1879"
+  },
+  "nodeGroups": [],
+  "id": "4CFqfzMo7nhfxenJ",
+  "tags": []
+}
