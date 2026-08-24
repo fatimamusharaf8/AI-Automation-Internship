@@ -168,7 +168,7 @@ When the lead score is 70 or higher, the Filter allows the lead to continue to S
 
 The sales team receives a notification containing important lead information.
 
-![Slack Notification](screenshots/07-slack.png)
+![Slack Notification](screenshots/07-slack-notification.png)
 
 ## 8. Code
 
