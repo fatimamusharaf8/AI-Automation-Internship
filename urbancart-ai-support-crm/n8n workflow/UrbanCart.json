@@ -1,0 +1,800 @@
+{
+  "name": "UrbanCart",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFile",
+        "fileToWatch": {
+          "__rl": true,
+          "value": "1Qxtdkm9XBOPO5-WTTOUpwMWeT8mab_AP",
+          "mode": "list",
+          "cachedResultName": "return_policy.txt",
+          "cachedResultUrl": "https://drive.google.com/file/d/1Qxtdkm9XBOPO5-WTTOUpwMWeT8mab_AP/view?usp=drivesdk"
+        }
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -288
+      ],
+      "id": "167ea027-430f-4589-a322-f482e580fb99",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "VvPcVKYVYqtNUGOM",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        48,
+        -288
+      ],
+      "id": "7377f491-0ac3-4d47-929e-4f952d419141",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "data"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -176,
+        -288
+      ],
+      "id": "c5b86e31-4954-4ead-8817-59d6697c9f83",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "VvPcVKYVYqtNUGOM",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Read the extracted text from the previous node\nconst rawText = $input.item.json.data || \"\";\nconst fileName = $node[\"Download file\"].json.name || \"return_policy.txt\";\n\n// Define chunk parameters\nconst chunkSize = 500;\nconst overlap = 50;\nconst chunks = [];\n\nfor (let i = 0; i < rawText.length; i += chunkSize - overlap) {\n    const textChunk = rawText.slice(i, i + chunkSize);\n    if (textChunk.trim().length > 0) {\n        chunks.push({\n            json: {\n                document_name: fileName,\n                category: \"policy\",\n                content: textChunk\n            }\n        });\n    }\n}\n\nreturn chunks;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        272,
+        -288
+      ],
+      "id": "28630992-c0a5-4d32-9ba3-df1970cc24f8",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "document_knowledge",
+          "mode": "list",
+          "cachedResultName": "document_knowledge"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        496,
+        -288
+      ],
+      "id": "1612b5bc-f828-4d1e-9076-afebd055c52c",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "f1fK2FAegVlxMvaa",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        704,
+        -80
+      ],
+      "id": "f4e8619a-2857-41ce-a97b-8151f8d8807d",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "document_name",
+                "value": "={{ $json.document_name }}"
+              },
+              {
+                "name": "category",
+                "value": "={{ $json.category }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        864,
+        -80
+      ],
+      "id": "4d2251cd-3fe8-4565-b32e-a278290a1ac6",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vapi-tools",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -448,
+        112
+      ],
+      "id": "1e940bf8-b2b3-46c7-b007-082d8b6309b7",
+      "name": "Webhook",
+      "webhookId": "03f0ee0f-01f1-4b43-98fc-a614c860b3de"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "orders",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "order_id",
+              "condition": "eq",
+              "keyValue": "=={{ $json.body.message.functionCall.parameters.order_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        48,
+        96
+      ],
+      "id": "682b289d-401b-492b-b65b-b4306d73b391",
+      "name": "Get many rows",
+      "credentials": {
+        "supabaseApi": {
+          "id": "f1fK2FAegVlxMvaa",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"results\": [\n    {\n      \"toolCallId\": \"={{ $('Webhook').item.json.body.message.functionCall.id }}\",\n      \"result\": \"={{ $json }}\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        768,
+        96
+      ],
+      "id": "c1e31136-aea4-4c83-8ad4-9db2986ccad5",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "$json.body.message.functionCall.name",
+                    "rightValue": "check_order_status",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "f17f198a-9b41-4b9e-aa26-c65c7a342609"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Output 0"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "3c02af0e-b28e-44b6-b5e5-9e3862093a71",
+                    "leftValue": "$json.body.message.functionCall.name",
+                    "rightValue": "search_knowledge_base",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Output 1"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "d534da75-d7b5-417e-abbf-bd70b45ac436",
+                    "leftValue": "=={{ $json.body.message.functionCall.name }}",
+                    "rightValue": "capture_lead",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Output 2"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "27fe315f-a1e7-41ae-977d-75b52d4b1053",
+                    "leftValue": "=={{ $json.body.message.functionCall.parameters.intent || $json.body.message.functionCall.name }}",
+                    "rightValue": "escalate_human",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Output 4"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -224,
+        112
+      ],
+      "id": "011918c8-f558-4e09-b1f9-901d578e1fc0",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "mode": "load",
+        "tableName": {
+          "__rl": true,
+          "value": "document_knowledge",
+          "mode": "list",
+          "cachedResultName": "document_knowledge"
+        },
+        "prompt": "=={{ $json.body.message.functionCall.parameters.query }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -16,
+        256
+      ],
+      "id": "7333b12a-424f-4037-a646-28ef9470bab6",
+      "name": "Supabase Vector Store1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "f1fK2FAegVlxMvaa",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        416
+      ],
+      "id": "ab993f24-bed8-49ba-bd64-5a47a0ecc69f",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "app0dIdBHB40IAHo8",
+          "mode": "list",
+          "cachedResultName": "UrbanCart CRM",
+          "cachedResultUrl": "https://airtable.com/app0dIdBHB40IAHo8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblBlyxqcbVRA9T0E",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://airtable.com/app0dIdBHB40IAHo8/tblBlyxqcbVRA9T0E"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "=={{ $json.body.message.functionCall.parameters.name }}",
+            "Phone": "=={{ $json.body.message.functionCall.parameters.phone }}",
+            "Product": "=={{ $json.body.message.functionCall.parameters.product }}",
+            "Budget": "=={{ $json.body.message.functionCall.parameters.budget }}",
+            "Location": "=={{ $json.body.message.functionCall.parameters.location }}",
+            "Status": "New Lead"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Product",
+              "displayName": "Product",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Budget",
+              "displayName": "Budget",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "New Lead",
+                  "value": "New Lead"
+                },
+                {
+                  "name": "Contacted",
+                  "value": "Contacted"
+                },
+                {
+                  "name": "Converted",
+                  "value": "Converted"
+                },
+                {
+                  "name": "New",
+                  "value": "New"
+                },
+                {
+                  "name": "Qualified",
+                  "value": "Qualified"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        48,
+        592
+      ],
+      "id": "97b9db29-25ad-4232-b7c3-bd33b7657e12",
+      "name": "Create a record",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "6R8DrVcpwX8xMCuO",
+          "name": "Airtable account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0BP6NB3DHQ",
+          "mode": "id"
+        },
+        "text": "=🚨 *URGENT SUPPORT ESCALATION* *Customer:* ={{ $json.body.message.functionCall.parameters.customer_name || 'Anonymous Call' }} *Issue:* ={{ $json.body.message.functionCall.parameters.reason || 'Customer requested human assistance.' }} *Action Required:* Immediate human follow-up requested.",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        64,
+        896
+      ],
+      "id": "028c568f-4278-4efa-93ea-7d2a2236616d",
+      "name": "Send a message",
+      "webhookId": "74a45d9c-7872-4197-83ec-a45a47abe005",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "E1lb5I95Ozhzo4SP",
+          "name": "Slack account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "databasePage",
+        "dataSourceId": {
+          "__rl": true,
+          "value": "3d026ebd-a903-80fd-a2cd-000b9ca0f129",
+          "mode": "list",
+          "cachedResultName": "UrbanCart Support Logs",
+          "cachedResultUrl": "https://app.notion.com/p/3d026ebda90380c4aa0ff19ecdfc8c43"
+        },
+        "title": "=={{ $json.body.message.functionCall.parameters.customer_name || 'Anonymous Call' }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Reason|rich_text",
+              "textContent": "=={{ $json.body.message.functionCall.parameters.reason || 'Escalated issue' }}"
+            },
+            {
+              "key": "Select|select",
+              "selectValue": "Escalated"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 3,
+      "position": [
+        352,
+        896
+      ],
+      "id": "70579842-abcb-41c2-9c47-7b1d2fe851de",
+      "name": "Create a database page",
+      "credentials": {
+        "notionOAuth2Api": {
+          "id": "tiMc9rg9nvp4svpD",
+          "name": "Notion account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Code in JavaScript": [
+      {
+        "json": {
+          "document_name": "return_policy.txt",
+          "category": "policy",
+          "content": "UrbanCart Policy: Customers can request returns for damaged or defective products within 7 days of delivery. Electronics come with a 1-year brand warranty unless specified otherwise. We deliver to all major cities in Pakistan, including Lahore, Karachi, and Islamabad. Delivery usually takes 2 to 4 business days."
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many rows": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Get many rows",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a database page": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "a9f44daa-44f2-4549-a037-05bf54056c71",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "504c86fbce11805504781a8cb5cc24f38741df2b80e8a6b0fd0c031ee60af098"
+  },
+  "nodeGroups": [],
+  "id": "UQShQpwNQAFQklJT",
+  "tags": []
+}

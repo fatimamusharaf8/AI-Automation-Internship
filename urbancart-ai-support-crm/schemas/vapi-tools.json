@@ -1,0 +1,53 @@
+{
+  "tools": [
+    {
+      "name": "check_order_status",
+      "description": "Look up order details using the order ID.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "order_id": { "type": "string", "description": "Order ID, e.g., UC-10452" }
+        },
+        "required": ["order_id"]
+      }
+    },
+    {
+      "name": "search_knowledge_base",
+      "description": "Semantic search for shipping, return, and warranty policies.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": { "type": "string", "description": "Customer question" }
+        },
+        "required": ["query"]
+      }
+    },
+    {
+      "name": "capture_lead",
+      "description": "Logs prospective buyer details into Airtable.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "phone": { "type": "string" },
+          "product": { "type": "string" },
+          "budget": { "type": "string" },
+          "location": { "type": "string" }
+        },
+        "required": ["name", "phone", "product"]
+      }
+    },
+    {
+      "name": "escalate_human",
+      "description": "Alerts the human team on Slack and logs to Notion.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "customer_name": { "type": "string" },
+          "reason": { "type": "string" }
+        },
+        "required": ["reason"]
+      }
+    }
+  ]
+}
